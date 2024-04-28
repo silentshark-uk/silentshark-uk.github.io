@@ -1,0 +1,539 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta name="generator" content="Bluefish 2.2.3" >
+<title>Francesca</title>
+<link rel="stylesheet" type="text/css" href="site.css">
+
+<script>
+
+//Hide status bar msg II script- by javascriptkit.com
+//Visit JavaScript Kit (http://javascriptkit.com) for script
+//Credit must stay intact for use
+
+function hidestatus(){
+window.status=''
+return true
+}
+
+if (document.layers)
+document.captureEvents(Event.MOUSEOVER | Event.MOUSEOUT)
+
+document.onmouseover=hidestatus
+document.onmouseout=hidestatus
+</script>
+
+<style fprolloverstyle>A:hover {color: #000000}
+</style>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#008000"
+vlink="#00FF00">
+
+<table border="0" width="100%">
+    <tr>
+        <td colspan="1" width="25%"><p align="center"><i><b><font size="6">
+        &nbsp;<img border="0" src="images/new_shark.jpg" width="95" height="81"></font></b></i></p>
+        </td>
+        <td colspan="2" width="50%" valign="bottom">
+        <p align="center">
+        <img src="images/sslogo2.jpg" width="309" height="64">
+        </td>
+        <td colspan="1" width="25%">
+        <p align="center"><img border="0" src="images/new_shark.jpg" width="95" height="81"></td>
+    </tr>
+    <tr>
+        <td width="25%" bgcolor="#C0C0C0" height="15" align="center">
+        <h2 align="center" style="margin-top: 0; margin-bottom: 0">
+        <a href="index.html" style="text-decoration: none">Home</a></h2>
+        </td>
+        <td width="25%" bgcolor="#C0C0C0" align="center">
+        <h2 align="center" style="margin-top: 0; margin-bottom: 0">
+        <a href="games.htm" style="text-decoration: none">Video Games</a></h2>
+        </td>
+        <td width="25%" bgcolor="#C0C0C0" align="center">
+        <h2 align="center" style="margin-top: 0; margin-bottom: 0">
+        <a href="francesca.htm" style="text-decoration: none">Computer Chess</a></h2>
+        </td>
+        <td width="25%" bgcolor="#C0C0C0" align="center">
+        <h2 align="center" style="margin-top: 0; margin-bottom: 0">
+        <a href="about.htm" style="text-decoration: none">About Me</a></h2>
+        </td>
+    </tr>
+</table>
+
+<h1 align="center">Computer chess - my program,
+Francesca</font></h1>
+
+<div align="center"><center> 
+
+<table border="1" cellpadding="4" cellspacing="0" width="85%">
+
+<tr>
+<td>
+       <h2 align="center">Francesca (Windows/ Winboard version)</font></h2> 
+        <p align="left">Here, you
+        can download the Winboard version of
+        Francesca,
+        the chess playing program I have written. Please note, to
+        run this version of Francesca, you must download and
+        install <a target="_blank" href="http://www.tim-mann.org/xboard.html">Tim Mann's Winboard program</a>.</p> 
+        <p align="left">
+        <h2 align="center">
+        <a href="fran032.zip">Download the latest version of Francesca v0.32 (Sept 2022) here!</a>
+        </h3>
+	   <p align="center"><a href="old.htm">Older versions are available as well</a></p>
+        <p align="center">Any
+        comments about any version of Francesca are welcome!
+        Please feel free to email </font> 
+        <a href="mailto:tom@silentshark.co.uk">tom@silentshark.co.uk</a> with your feedback.</font></p> 
+        <p align="center"> To help you get 
+        Francesca up and running under Winboard, I've added a
+        <a href="setup_winboard_francesca.htm">Francesca Quick Start page</a>. </p> 
+               </td> 
+    </tr> 
+</table> 
+
+<p></p>
+
+<table border="1" cellpadding="4" cellspacing="0" width="85%">
+    <tr>
+        <td align="center" width="100%" colspan="2">
+        <h2>Introduction</h2>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" width="50%"><p>Francesca is a chess playing program which I have developed in my 
+        spare time over the last few years. It (she?) is written in C, and uses 
+        many state of the art chess-programming techniques. <p>She has competed in several computer chess
+        championships since 1995, and scored well against strong
+        opposition at the <a
+        href="http://chessprogramming.wikispaces.com/WCCC+1999"
+        target="_blank">1999 World Computer
+        Chess Championship</a>.</font></td>
+        <td valign="top"><p align="left">Before I go any
+        further, let me explain one thing, which people keep on asking: <a
+        href="whyfrancesca.htm">why the
+        name Francesca?</a></font></p>
+        </td>
+    </tr>
+</table>
+
+<p></p>
+
+<table border="1" cellpadding="4" cellspacing="0" width="85%">
+    <tr>
+        <td align="center" width="100%" colspan="2">
+        <h2>History</font></h2>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" width="50%">
+
+<p align="left">I initially thought of
+writing a computer chess program in 1991, when sitting on a beach
+in sunny Ibiza. During that summer I quickly hacked up a simple
+program, written on the wonderful old Amiga, initially in
+AmigaBasic, then in C.</font></p>
+
+<p align="left">Back then there was very
+little detail published on the design of computer chess programs.
+So I based my initial program on the ideas published in &quot;How
+Computers Play Chess&quot; (Levy and Newborn). I think the first
+program which played any sort of recognisable chess searched to 3
+plies, and searched about 200 positions per second.</font></p>
+
+<p align="left">In the Autumn of 1991, I
+had the chance to try out my creation on a 386SX PC, running at
+16Mhz. It seemed so fast compared with the Amiga! Before long I
+bought myself a 486DX PC, running at 33Mhz, and began developing
+Francesca in earnest.</font></p>
+
+<p align="left">Little by little, Francesca's
+playing standard improved. Null moves added a turbo charger to an
+otherwise unremarkable chess engine, and evaluation by piece-value
+squares increased the NPS figure and search depth. There were
+still problems, and after the WMCCC in 1995 (Paderborn), I bit
+the bullet, and added hash tables. Improving move order and
+history tables, along with the new hash tables meant that Francesa 1996 was over 10 times quicker at searching through the
+plies than Francesca 1995. And it showed, Francesca gaining a
+very respectable 9th= place at the WMCCC 1996 in Jakarta. </font></p>
+
+<p align="left">Between Jakarta and the
+WMCCC 1997 in Paris, there were few changes - some evaluation
+changes, some bug fixes, and some optimizations. And some bugs,
+too. Francesca struggled against some opponents she really should
+have beaten.</font></p>
+
+        </td>
+        <td valign="top">
+
+<p align="left">(continued)</p>
+
+<p align="left">The problems at Paris made
+me realize that a change in direction was required. I rewrote the
+entire evaluation function, changing Francesca from a simple
+&quot;piece-value squares&quot; searcher to a full &quot;leaf
+evaluator&quot;. The benefits were immediate, obvious, and
+immense. Suddenly, Francesca was playing more interesting,
+challenging chess. I had the opportunity to enter her into the
+1998 Spanish computer chess championship, and she came within an
+ace of winning the whole competition!</font></p>
+
+<p align="left">Shortly after the 1998
+Spanish computer chess championship, I was encouraged to rewrite
+my program so it could function as a chess engine within <a
+href="http://www.tim-mann.org/chess.html"
+target="_blank">Tim Mann's (wonderful)
+Winboard program</a>. This greatly
+facilitated testing (my PC frequently spends days auto-playing
+hundreds of games between Francesca and other engines). Further,
+a lot of computer chess enthusiasts (for example, <a
+href="http://www.open-aurec.com/chesswar/" target="_blank">Olivier Deville</a>),
+like to run computer chess competitions for Winboard engines.</font></p>
+
+<p align="left">The high spot of Francesca's
+career was undoubtedly the <a
+href="http://chessprogramming.wikispaces.com/WCCC+1999" target="_blank">1999 World Computer Chess Championships</a>, held in Paderborn, Germany. This is an &quot;open
+hardware&quot; event, so many programs were playing on hardware
+which was many, many times faster than the PC Francesca used.
+Despite this, in the second round Francesca beat the professional
+American program, <em>Mchess</em>, and later drew with <em>Cilkchess</em>
+and <em>Zugzwang</em> (highly parallelized programs, running on
+fantastic hardware). <em>Cilkchess</em> was running on a 256-processor
+SGI machine (hosted at NASA), and <em>Zugzwang</em> ran on a Cray!
+Overall, Francesca was 12th out of 30 participants - a
+surprisingly good result.</font></p>
+
+        <p align="left">&nbsp;</p>
+        </td>
+    </tr>
+</table>
+
+<p></p>
+
+<div align="center">
+  <center>
+
+<table border="1" cellpadding="4" cellspacing="0">
+    <tr>
+        <td align="center" width="100%">
+        <h2>Francesca in action</h2>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" width="50%">
+
+<h3 align="center">Francesca vs Mchess,
+WCCC 1999</font></h3>
+
+<h4 align="center">MChess</font></h4>
+<div align="center"><center>
+
+<table border="1" cellspacing="1">
+    <tr>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/bkb.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+    </tr>
+    <tr>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/wpw.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/bpw.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+    </tr>
+    <tr>
+        <td><p align="center">
+        <img
+        src="images/bpw.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/bpw.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+    </tr>
+    <tr>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/bpw.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/wpb.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+    </tr>
+    <tr>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/wrb.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/wpb.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+    </tr>
+    <tr>
+        <td><p align="center">
+        <img
+        src="images/bqb.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/wbw.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/wpw.gif" width="34" height="35"></font></p>
+        </td>
+    </tr>
+    <tr>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/wkb.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+    </tr>
+    <tr>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/b.gif" width="36" height="35"></font></p>
+        </td>
+        <td><p align="center">
+        <img
+        src="images/w.gif" width="34" height="35"></font></p>
+        </td>
+    </tr>
+</table>
+</center></div>
+
+<h4 align="center">Francesca</font></h4>
+
+<p align="center">Move 45, Francesca (white) to
+play. Looks like white is in deep trouble.. what would you choose?</font></p>
+
+<p align="center">(Francesca played Re4,
+and went on to win the game 10 moves later!)</font></p>
+
+        <p>&nbsp;</td>
+    </tr>
+</table>
+
+  </center>
+</div>
+
+<hr>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-11345140-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

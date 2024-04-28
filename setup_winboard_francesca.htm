@@ -1,0 +1,156 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<title>Setup Francesca</title>
+<link rel="stylesheet" type="text/css" href="site.css">
+
+<script>
+
+//Hide status bar msg II script- by javascriptkit.com
+//Visit JavaScript Kit (http://javascriptkit.com) for script
+//Credit must stay intact for use
+
+function hidestatus(){
+window.status=''
+return true
+}
+
+if (document.layers)
+document.captureEvents(Event.MOUSEOVER | Event.MOUSEOUT)
+
+document.onmouseover=hidestatus
+document.onmouseout=hidestatus
+</script>
+
+<style fprolloverstyle>A:hover {color: #000000}
+</style>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#008000"
+vlink="#00FF00">
+
+<table border="0" width="100%">
+    <tr>
+        <td colspan="1" width="25%"><p align="center"><i><b><font size="6">
+        &nbsp;<img border="0" src="images/new_shark.jpg" width="95" height="81"></font></b></i></p>
+        </td>
+        <td colspan="2" width="50%" valign="bottom">
+        <p align="center">
+        <img src="images/sslogo2.jpg" width="309" height="64">
+        </td>
+        <td colspan="1" width="25%">
+        <p align="center"><img border="0" src="images/new_shark.jpg" width="95" height="81"></td>
+    </tr>
+    <tr>
+        <td width="25%" bgcolor="#C0C0C0" height="15" align="center">
+        <h2 align="center" style="margin-top: 0; margin-bottom: 0">
+        <a href="index.html" style="text-decoration: none">Home</a></h2>
+        </td>
+        <td width="25%" bgcolor="#C0C0C0" align="center">
+        <h2 align="center" style="margin-top: 0; margin-bottom: 0">
+        <a href="games.htm" style="text-decoration: none">Video Games</a></h2>
+        </td>
+        <td width="25%" bgcolor="#C0C0C0" align="center">
+        <h2 align="center" style="margin-top: 0; margin-bottom: 0">
+        <a href="francesca.htm" style="text-decoration: none">Computer Chess</a></h2>
+        </td>
+        <td width="25%" bgcolor="#C0C0C0" align="center">
+        <h2 align="center" style="margin-top: 0; margin-bottom: 0">
+        <a href="about.htm" style="text-decoration: none">About Me</a></h2>
+        </td>
+    </tr>
+</table>
+
+<h1 align="center">Francesca - Quick Start</h1>
+<div align="center"><center>
+
+<table border="1" cellpadding="8" cellspacing="8" bordercolor="#C0C0C0" style="border-collapse: collapse">
+    <tr>
+        <td><h2 align="center">Getting up and going with the Winboard version of 
+        Francesca</h2>
+        <p align="left">1. Download the latest version of <a target="_blank" href="http://www.tim-mann.org/xboard.html">Tim Mann's Winboard program</a>.</p>
+        <p align="left">2. Install Winboard to the default location (c:\program 
+        files\winboard or similar), chosing all the default options. </p>
+        <p align="left">3. Run Winboard, to check it is all working ok. Have a 
+        look at the Winboard help system, play some games, familiarize yourself.</p>
+        <p align="left">4. Download the latest version of <a href="franmad.zip">
+        Francesca</font></a>. </p>
+        <p align="left">5. Unzip Francesca to a folder, for instance
+        <a href="file:///c:/francesca" style="text-decoration: none">
+        c:\francesca</a></p>
+        <p align="left">6. To configure Winboard so that it offers the option of 
+        using the Francesca engine when run, you need to use a text editor (such as notepad) to edit the file winboard.ini file. You can find Winboard.ini in the same directory you installed Winboard. (If you cannot find the file winboard.ini in the winboard directory, you need to run winboard.exe once, then exit for the file to be generated.)
+        </p>
+        <p align="left">7. Using notepad, scroll to the end of the winboard.ini file
+
+<p>
+You should see this at the bottom of the file:
+
+</p>
+<font face="Courier" size="6">
+<table class="inline">
+	<tr class="row0">
+		<td class="col0"> }<br/>
+  /firstChessProgramNames={GNUChess<br/>
+  "GNUChes5 xboard"<br/>
+
+  }<br/>
+  /secondChessProgramNames={GNUChess<br/>
+  "GNUChes5 xboard"<br/>
+  }<br/>
+ </td>
+	</tr>
+</table>
+</font>
+
+<p>
+
+You need to change the above to look like:
+</p>
+
+<font face="Courier" size="6">
+<table class="inline">
+	<tr class="row0">
+		<td class="col0"> }<br/>
+  /firstChessProgramNames={GNUChess<br/>
+
+  "GNUChes5 xboard" <br/>
+<b>mad /fd=c:\francesca</b><br/>
+  }<br/>
+  /secondChessProgramNames={GNUChess<br/>
+  "GNUChes5 xboard"<br/>
+<b>mad /sd=c:\francesca</b><br/>
+
+  }<br/>
+ </td>
+	</tr>
+</table>
+</font>
+
+        <p align="left">8. That's it! When you run Winboard, you will be able to 
+        select the Francesca engine from the drop-down list on the initial Winboard screen.</p>
+
+
+<p>Lastly, there's a good guide at <a href="http://computer-chess.org/doku.php?id=winboard:faq:index#winboard_and_chess_engines_faq">computer-chess.org</a> which can provide excellent guidance on setting up chess engines under Winboard.</p>
+        </td>
+    </tr>
+</table>
+</center></div>
+
+<hr>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-11345140-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>
