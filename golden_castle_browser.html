@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Golden Castle — Browser Edition</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --ink: #d8dcff;
+    --muted: #969bd2;
+    --panel: #171858;
+    --panel2: #20216e;
+    --border: #777bd7;
+    --screen: #3437a6;
+    --danger: #ffb4b4;
+    --success: #c4ffc9;
+    --gold: #fff19a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 0%, #2b2d82 0, #11123c 48%, #08091e 100%);
+    color: var(--ink);
+    font-family: "Courier New", ui-monospace, monospace;
+  }
+  .shell {
+    width: min(100%, 980px);
+    margin: 0 auto;
+    padding: 18px;
+  }
+  header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  h1 {
+    margin: 0;
+    color: var(--gold);
+    font-size: clamp(1.35rem, 4vw, 2.2rem);
+    letter-spacing: .06em;
+    text-shadow: 2px 2px 0 #7e6518;
+  }
+  .credit {
+    color: var(--muted);
+    font-size: .8rem;
+    text-align: right;
+  }
+  .cabinet {
+    border: 5px solid #0a0b29;
+    border-radius: 14px;
+    background: linear-gradient(#2a2c82, #171858);
+    box-shadow: 0 20px 70px rgba(0,0,0,.55), inset 0 0 0 2px var(--border);
+    overflow: hidden;
+  }
+  .status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    padding: 10px 14px;
+    background: #101141;
+    border-bottom: 2px solid var(--border);
+    color: var(--muted);
+    font-size: .82rem;
+  }
+  .status strong { color: var(--ink); }
+  #screen {
+    height: min(64vh, 610px);
+    min-height: 360px;
+    overflow-y: auto;
+    padding: 18px;
+    background: var(--screen);
+    color: white;
+    font-size: clamp(.9rem, 2.2vw, 1.05rem);
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    scrollbar-color: #8a8ee5 #242676;
+  }
+  .line { margin: 0 0 .42rem; }
+  .line.command { color: var(--gold); }
+  .line.danger { color: var(--danger); font-weight: bold; }
+  .line.success { color: var(--success); font-weight: bold; }
+  .line.muted { color: #c0c4fa; }
+  form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: #101141;
+    border-top: 2px solid var(--border);
+  }
+  .prompt {
+    align-self: center;
+    color: var(--gold);
+    font-weight: bold;
+  }
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 2px solid var(--border);
+    background: #272979;
+    color: white;
+    padding: 11px 12px;
+    border-radius: 6px;
+    font: inherit;
+    text-transform: uppercase;
+    outline: none;
+  }
+  input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255,241,154,.2); }
+  button {
+    border: 1px solid #8b8fe5;
+    background: #292b7f;
+    color: white;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font: inherit;
+    cursor: pointer;
+  }
+  button:hover, button:focus-visible { background: #3d40aa; }
+  .quick {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 7px;
+    padding: 10px 12px 13px;
+    background: #101141;
+  }
+  .quick button { padding: 8px 4px; font-size: .82rem; }
+  .notes {
+    margin-top: 13px;
+    color: var(--muted);
+    font-size: .82rem;
+    line-height: 1.45;
+  }
+  @media (max-width: 680px) {
+    header { align-items: start; flex-direction: column; }
+    .credit { text-align: left; }
+    .quick { grid-template-columns: repeat(4, 1fr); }
+    #screen { min-height: 52vh; }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+  <header>
+    <h1>THE GOLDEN CASTLE</h1>
+    <div class="credit">Conception by T. King, 1983<br>Browser adaptation from the 1987 C64 program</div>
+  </header>
+
+  <section class="cabinet" aria-label="The Golden Castle game">
+    <div class="status">
+      <span>Location: <strong id="location">1</strong></span>
+      <span>Score: <strong id="score">0/150</strong></span>
+      <span>Carrying: <strong id="carrying">0/9</strong></span>
+      <span>Time: <strong id="time">00:00:00</strong></span>
+    </div>
+
+    <div id="screen" role="log" aria-live="polite"></div>
+
+    <form id="commandForm" autocomplete="off">
+      <span class="prompt">&gt;</span>
+      <input id="command" maxlength="80" autofocus aria-label="Game command"
+             placeholder="Type a command, e.g. NORTH or GET TORCH">
+      <button type="submit">ENTER</button>
+    </form>
+
+    <div class="quick" aria-label="Quick commands">
+      <button data-command="NORTH">NORTH</button>
+      <button data-command="SOUTH">SOUTH</button>
+      <button data-command="EAST">EAST</button>
+      <button data-command="WEST">WEST</button>
+      <button data-command="UP">UP</button>
+      <button data-command="DOWN">DOWN</button>
+      <button data-command="LOOK">LOOK</button>
+      <button data-command="INVENTORY">INVENTORY</button>
+    </div>
+  </section>
+
+  <p class="notes">
+    Commands normally use VERB–NOUN form: GET TORCH, LIGHT TORCH, EXAMINE BOOK,
+    GIVE GOLD, and so on. SAVE and LOAD use this browser's local storage.
+    Type INSTRUCTIONS for the original objective.
+  </p>
+</main>
+
+<script>
+"use strict";
+
+const ORIGINAL_ROOMS = ["IN THE MIDDLE OF A VAST SANDY DESERT", "LOST IN A SANDY DESERT", "LOST IN A SANDY DESERT", "LOST IN A SANDY DESERT", "LOST IN A SANDY DESERT", "LOST IN A SANDY DESERT", "LOST IN A SANDY DESERT", "ON A DESERTED SANDY PLAIN", "ON A DESERTED SANDY PLAIN", "AT THE TOP OF A LUSH GREEN VALLEY", "ON A STONY PATH ON A HILL", "IN AN OLD ROTTING SHACK.A SIGN HERE SAYS'PUT DIAMOND HERE'", "AT THE EDGE OF A HUGE WHITE-WASHED MANSION.IT LOOKS LIKE IT'S UNINHABITED", "IN A THIN OAK HALLWAY.SCRATCHED IN BLOOD IS THE WORDS 'STAIRS OUT..'", "ON SOME CRUMBLING STAIRS...THEY COLLAPSE!", "IN A DUSTY FIREPLACE", "UP AT THE TOP OF THE FIRE-PLACE.CHOCKING SOOT BILLOWS AROUND ME", "ON A ROCKY PATH WHICH TWISTS BACK AND FORTH BETWEEN LOW LYING HILLS", "LOST IN A FOREST", "AT THE EDGE OF A MOUNTAIN.THERE IS A STRANGELY COLOURED BOULDER HERE", "ON A PATH IN THE FOREST", "LOST IN THE FOREST", "LOST IN THE FOREST", "AT THE TOP OF A PINE TREE", "IN A LONG MOSSY CORRIDOR.IT'S DAMP AND SMELLY IN HERE", "IN A TINY CARPETED ROOM.THE ROOF IS BARELY HEAD HEIGHT", "ON A POLISHED MARBLE STAIRCASE", "ON THE EDGE OF A CRUMBLING MONASTRY;IN A SPINACH FIELD", "IN AMONGST THE RUINS.A SOLID BRICK WALL BLOCKS YOUR PATH", "IN A LONG MOSSY CORRIDOR.IT'S DAMP AND SMELLY IN HERE", "IN A LONG DAMP PASSAGEWAY", "IN A STONE DUNGEON", "AT THE GATE OF THE GOLDEN CASTLE", "IN SOME QUICKSAND", "IN A BARLEY FIELD.A WIND IS BLOWING LIGHTLY", "ON A STONY GARDEN PATH.FROM HERE I CAN JUST SEE A LAKE IN THE DISTANCE", "IN THE SERVANTS PARLOUR", "IN A COBBLED COURTYARD", "IN THE HALLWAY OF A SERVANTS OUTBUILDING", "IN AN OLD STABLE", "IN THE MAIN HALLWAY OF THE CASTLE", "ON AN OAK STAIRCASE.FROM UPSTAIRS A FAINT UMPLEASANT ODOUR IS DRIFTING", "ON THE LANDING.THERE IS A HORRIBLE SMELL OF ...SEWAGE!!", "IN THE LAVATORY.THE SMELL IS UMBEARABLE", "IN A GREEN SLIMY TUNNEL", "IN THE MAIN HALLWAY OF THE CASTLE", "IN A CARPETED LOUNGE", "AT THE EDGE OF THE STRONGROOM", "IN A GREEN SLIMY TUNNEL", "AT THE BACKDOOR OF THE CASTLE", "IN THE STRONGROOM.THICK DUST CLINGS TO EVERYTHING", "IN A STINKING DUNGEON", "NEAR AN OLD WOODEN BRIDGE", "IN A CLEARING", "IN AN OVERGROWN COPSE.TANGLED BRAMBLES CRAWL EVERYWHERE", "AT THE TOP OF A TALL TREE", "IN THE VEGETABLE GARDEN", "LOST IN THE GARDEN MAZE", "LOST IN THE GARDEN MAZE", "LOST IN THE GARDEN MAZE", "LOST IN THE GARDEN MAZE", "IN SOME NON DESCRIPT SCRUBLAND", "IN SOME DESCRIPT SCRUBLAND", "AT THE EDGE OF A DEEP FISSURE.IT'S CLEARLY TOO DEEP TO CROSS.", "AT THE EDGE OF A MURKY LAKE (THE LAKE IS TO THE SOUTH)", "IN THE MIDDLE OF THE LAKE"];
+const ORIGINAL_DIRECTIONS = [[0, 0, 0, 2], [4, 8, 1, 0], [6, 3, 4, 0], [7, 2, 5, 3], [5, 5, 5, 4], [6, 7, 3, 0], [7, 4, 7, 6], [2, 9, 0, 0], [8, 10, 0, 0], [9, 11, 12, 0], [10, 13, 0, 18], [0, 0, 0, 10], [11, 14, 0, 0], [13, 16, 15, 0], [0, 0, 0, 0], [14, 0, 0, 0], [0, 0, 0, 0], [0, 0, 11, 0], [0, 22, 22, 21], [0, 21, 18, 0], [20, 22, 19, 0], [21, 23, 19, 22], [22, 0, 19, 22], [0, 0, 0, 0], [0, 26, 0, 30], [25, 0, 0, 27], [0, 28, 26, 0], [27, 29, 0, 0], [28, 0, 0, 0], [0, 27, 25, 32], [32, 0, 0, 0], [0, 0, 30, 0], [0, 32, 0, 0], [37, 0, 0, 35], [0, 0, 0, 0], [41, 35, 0, 0], [0, 34, 38, 0], [0, 0, 0, 0], [0, 0, 40, 38], [0, 0, 0, 39], [46, 36, 42, 0], [0, 0, 43, 41], [0, 0, 44, 42], [0, 0, 43, 0], [49, 40, 45, 45], [50, 41, 47, 0], [0, 0, 48, 46], [0, 0, 0, 47], [52, 45, 49, 49], [57, 46, 0, 0], [55, 0, 0, 0], [0, 49, 0, 0], [0, 0, 0, 0], [53, 55, 0, 53], [54, 60, 0, 0], [0, 0, 0, 0], [58, 50, 0, 0], [59, 57, 59, 59], [60, 58, 59, 59], [60, 59, 61, 60], [0, 60, 58, 60], [0, 63, 63, 53], [62, 64, 0, 0], [63, 0, 0, 0], [64, 66, 0, 0], [65, 20, 0, 0]];
+const ORIGINAL_OBJECTS = [{"name": "A BOTTLE CONTAINING A FOUL SMELLING LIQUID", "location": 1}, {"name": "A TORCH", "location": 10}, {"name": "A BOX OF MATCHES", "location": 10}, {"name": "A BAG OF GOLD", "location": 11}, {"name": "A CAN OF OIL", "location": 14}, {"name": "A LITTLE GOLD KEY", "location": 17}, {"name": "AN ORANGE", "location": 24}, {"name": "A PAIR OF SNOWSHOES", "location": 24}, {"name": "SPINACH", "location": 28}, {"name": "A WOODEN PANNEL", "location": 32}, {"name": "A BOTTLE OF RUM", "location": 37}, {"name": "A RUSTY LEVER", "location": 40}, {"name": "A TATTY OLD BOOK", "location": 52}, {"name": "A LOCKED CHEST", "location": 51}, {"name": "A SPADE", "location": 61}, {"name": "A WOODEN BOW", "location": 56}, {"name": "A RED ARROW", "location": 56}, {"name": "A BLACK KNIGHT", "location": 53}, {"name": "A DEAD KNIGHT", "location": 0}, {"name": "A RED TYPE OF FISH", "location": 5}, {"name": "A HUGE SHINING DIAMOND", "location": 0}, {"name": "A GOLDEN GATE", "location": 33}, {"name": "A STRANGE BOULDER", "location": 20}, {"name": "A TALL WALL", "location": 29}, {"name": "FRESHLY CUT LUMBER", "location": 62}, {"name": "SOME NAILS", "location": 14}, {"name": "A HEAVY HAMMER", "location": 14}, {"name": "A DULL ILLUMINANT WAND", "location": 63}, {"name": "A HOME-MADE RAFT", "location": 0}];
+const ORIGINAL_NOUNS = ["BOT", "TOR", "MAT", "GOL", "OIL", "KEY", "ORA", "SNO", "SPI", "PAN", "RUM", "LEV", "BOO", "CHE", "SPA", "BOW", "ARR", "KNI", "KNI", "FIS", "DIA", "GAT", "BOU", "WAL", "LUM", "NAI", "HAM", "WAN", "RAF"];
+const ORIGINAL_VERBS = ["GO", "GET", "LOO", "INV", "DRO", "HEL", "QUI", "TAK", "OPE", "EAT", "DRI", "GIV", "OFF", "CLI", "LIG", "ATT", "KIL", "THR", "REA", "EXA", "PUS", "OIL", "PUL", "UNL", "JUM", "WEA", "SHO", "DIG", "SAY"];
+
+const $ = (selector) => document.querySelector(selector);
+const screen = $("#screen");
+const input = $("#command");
+
+const objectAliases = {
+  "BOT": 1, "BOTTLE": 1, "ACID": 1, "LIQUID": 1,
+  "TOR": 2, "TORCH": 2,
+  "MAT": 3, "MATCH": 3, "MATCHES": 3, "BOX": 3,
+  "GOL": 4, "GOLD": 4, "BAG": 4,
+  "OIL": 5, "CAN": 5,
+  "KEY": 6,
+  "ORA": 7, "ORANGE": 7,
+  "SNO": 8, "SNOWSHOE": 8, "SNOWSHOES": 8,
+  "SPI": 9, "SPINACH": 9,
+  "PAN": 10, "PANEL": 10, "PANNEL": 10,
+  "RUM": 11,
+  "LEV": 12, "LEVER": 12,
+  "BOO": 13, "BOOK": 13,
+  "CHE": 14, "CHEST": 14,
+  "SPA": 15, "SPADE": 15,
+  "BOW": 16,
+  "ARR": 17, "ARROW": 17,
+  "KNI": 18, "KNIGHT": 18,
+  "FIS": 20, "FISH": 20,
+  "DIA": 21, "DIAMOND": 21,
+  "GAT": 22, "GATE": 22,
+  "BOU": 23, "BOULDER": 23,
+  "WAL": 24, "WALL": 24,
+  "LUM": 25, "LUMBER": 25, "WOOD": 25,
+  "NAI": 26, "NAIL": 26, "NAILS": 26,
+  "HAM": 27, "HAMMER": 27,
+  "WAN": 28, "WAND": 28,
+  "RAF": 29, "RAFT": 29, "BOAT": 29
+};
+
+let state;
+let clockTimer;
+let memorySave = null;
+
+function freshState() {
+  return {
+    rooms: [null, ...ORIGINAL_ROOMS],
+    directions: [null, ...ORIGINAL_DIRECTIONS.map(row => [null, ...row])],
+    objects: [null, ...ORIGINAL_OBJECTS.map(o => ({...o}))],
+    room: 1,
+    troll: 1,
+    goblin: 1,
+    pirate: 1,
+    knight: 1,
+    harpy: 1,
+    panel: 1,
+    matchesLit: false,
+    torchBurning: false,
+    snowshoesWorn: false,
+    chestOpen: false,
+    raftMade: false,
+    dugPaper: false,
+    dead: false,
+    won: false,
+    startedAt: Date.now(),
+    elapsedBeforeStart: 0
+  };
+}
+
+function resetGame() {
+  state = freshState();
+  screen.textContent = "";
+  print("****************************************", "muted");
+  print("          THE GOLDEN CASTLE", "success");
+  print("        CONCEPTION BY T. KING");
+  print("             IN 1983");
+  print("****************************************", "muted");
+  print("");
+  print("THE ORIGINAL GOLDEN CASTLE WAS PROGRAMMED");
+  print("ON AN RML/380Z, THEN REPROGRAMMED FOR THE");
+  print("VIC-20 AND C64. THIS EDITION RUNS DIRECTLY");
+  print("IN A MODERN WEB BROWSER.");
+  print("");
+  print("Type INSTRUCTIONS for the objective.");
+  print("");
+  describeRoom();
+  updateStatus();
+  input.focus();
+}
+
+function elapsedSeconds() {
+  return state.elapsedBeforeStart + Math.floor((Date.now() - state.startedAt) / 1000);
+}
+
+function formatTime(total) {
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return [h, m, s].map(n => String(n).padStart(2, "0")).join(":");
+}
+
+function carriedCount() {
+  return state.objects.slice(1).filter(o => o.location === -1).length;
+}
+
+function currentScore() {
+  let score = 0;
+  if (state.torchBurning) score += 10;
+  if (state.troll === 0) score += 10;
+  if (state.objects[23].location === 0) score += 20;
+  if (state.snowshoesWorn) score += 20;
+  if (state.harpy === 0) score += 20;
+  if (state.pirate === 0) score += 10;
+  if (state.knight === 0) score += 20;
+  if (state.objects[21].location === -1) score += 20;
+  // The original BASIC awarded 19 here, making its stated 150-point maximum
+  // mathematically unreachable. The browser edition corrects that to 20.
+  if (state.objects[29].location === -1) score += 20;
+  return score;
+}
+
+function updateStatus() {
+  $("#location").textContent = state.room;
+  $("#score").textContent = `${currentScore()}/150`;
+  $("#carrying").textContent = `${carriedCount()}/9`;
+  $("#time").textContent = formatTime(elapsedSeconds());
+}
+
+function print(text = "", type = "") {
+  const line = document.createElement("div");
+  line.className = `line ${type}`.trim();
+  line.textContent = text;
+  screen.appendChild(line);
+  screen.scrollTop = screen.scrollHeight;
+}
+
+function printCommand(command) {
+  print(`> ${command}`, "command");
+}
+
+function visibleObjects() {
+  return state.objects
+    .map((o, i) => ({o, i}))
+    .filter(({o, i}) => i > 0 && o.location === state.room);
+}
+
+function listExits() {
+  const names = ["", "NORTH", "SOUTH", "EAST", "WEST"];
+  const exits = [];
+  for (let i = 1; i <= 4; i++) {
+    if (state.directions[state.room][i] !== 0) exits.push(names[i]);
+  }
+  return exits;
+}
+
+function describeRoom() {
+  if (state.dead || state.won) return;
+
+  print(`I'M ${state.rooms[state.room]}`);
+  const objects = visibleObjects();
+  if (objects.length) {
+    print("");
+    print("I CAN SEE:");
+    objects.forEach(({o}) => print(`  ${o.name}`));
+  } else {
+    print("THERE'S NO USEFUL OBJECTS TO BE SEEN HERE.");
+  }
+
+  // Immediate location hazards.
+  if (state.room === 15) return die("HELP!!! THE STAIRS COLLAPSE BENEATH YOU.");
+  if (state.room === 34 && !state.snowshoesWorn) {
+    return die("HELP... YOU SINK INTO THE QUICKSAND.");
+  }
+  if (state.room === 66 && !state.raftMade) {
+    return die("OH DEAR. I GUESS YOU CAN'T SWIM! YOU HAVE DROWNED!");
+  }
+  if (!state.torchBurning && (state.room === 45 || state.room === 49)) {
+    print("IT'S PITCH DARK. IF I MOVE NOW I'LL FALL IN A PIT!", "danger");
+    return die("OH DEAR! YOU FELL IN A PIT AND BROKE YOUR NECK.");
+  }
+
+  print("");
+  const exits = listExits();
+  print("OBVIOUS DIRECTIONS TO GO ARE:");
+  if (exits.length) exits.forEach(exit => print(`  ${exit}`));
+  else print("  NOWHERE AT ALL!");
+
+  // Delayed enemies: the player gets one command to solve each encounter.
+  if (state.troll === 2) return die("THE TROLL COMES AFTER YOU AND EATS YOU WITH RELISH!");
+  if (state.room === 18 && state.troll === 1) {
+    print("THERE IS A HUGE TROLL BLOCKING YOUR WAY!", "danger");
+    state.troll = 2;
+  }
+
+  if (state.room === 30 && state.objects[6].location === -1) {
+    print("A LITTLE GOBLIN DARTS OUT, SNATCHES YOUR KEY AND VANISHES IN GREEN SMOKE!", "danger");
+    state.objects[6].location = 28;
+  }
+
+  if (state.pirate === 2) {
+    return die("THE PIRATE DRAWS HIS CUTLASS AND CUTS YOU UP IN NO TIME...");
+  }
+  if (state.room === 35 && state.pirate === 1) {
+    print("A DRUNKEN PIRATE BLOCKS YOUR WAY. 'OW ABOUT SOME RUM, MATEY?'", "danger");
+    state.pirate = 2;
+  }
+
+  if (state.knight === 2) {
+    return die("THE BLACK KNIGHT SKEWERS YOU WITH HIS LANCE.");
+  }
+  if (state.room === 53 && state.knight === 1) {
+    print("A HUGE BLACK KNIGHT IS CHARGING TOWARDS YOU AT TOP SPEED!", "danger");
+    state.knight = 2;
+  }
+
+  if (state.harpy === 2) {
+    return die("THE HARPY RIPS YOU INTO PIECES AND THEN DEVOURS YOU.");
+  }
+  if (state.room === 38 && state.harpy === 1) {
+    print("A HARPY BLOCKS YOUR PATH. ITS BLEEDING GUMS SUGGEST SCURVY!", "danger");
+    state.harpy = 2;
+  }
+
+  updateStatus();
+}
+
+function die(message) {
+  print("");
+  print(message, "danger");
+  print("YOU ARE DEAD.", "danger");
+  print("Type RESTART to play again, or LOAD to restore a saved game.");
+  state.dead = true;
+  updateStatus();
+}
+
+function win() {
+  print("");
+  print("WELL DONE — YOU HAVE COMPLETED THIS ADVENTURE!", "success");
+  print("LOOK OUT FOR OTHER ADVENTURES BY TOM KING.");
+  state.won = true;
+  updateStatus();
+}
+
+function instructions() {
+  print("THE OBJECT OF THIS ADVENTURE IS TO FIND THE GOLDEN CASTLE,");
+  print("ENTER IT AND COLLECT THE DIAMOND OF KRAAL, HIDDEN IN A");
+  print("STRONGROOM. THEN FIND YOUR WAY BACK TO THE OLD SHACK AND");
+  print("PLACE THE DIAMOND THERE.");
+  print("");
+  print("USE VERB–NOUN COMMANDS. EXAMPLES:");
+  print("  GET TORCH   LIGHT TORCH   EXAMINE BOOK   GIVE GOLD");
+  print("SHORTHANDS AND ONE-LETTER DIRECTIONS ARE ACCEPTED.");
+  print("HINT: IN THE FOREST, SOME TREES CAN BE CLIMBED.");
+}
+
+function resolveObject(noun) {
+  const cleaned = noun.trim().toUpperCase().replace(/[^A-Z]/g, "");
+  if (!cleaned) return 0;
+
+  const direct = objectAliases[cleaned] || objectAliases[cleaned.slice(0, 3)];
+  if (!direct) return 0;
+
+  // For duplicate KNIGHT nouns, prefer an object present or carried.
+  if (direct === 18) {
+    if ([state.room, -1].includes(state.objects[19].location)) return 19;
+  }
+  return direct;
+}
+
+function has(id) {
+  return state.objects[id].location === -1;
+}
+
+function isHere(id) {
+  return state.objects[id].location === state.room;
+}
+
+function removeObject(id) {
+  state.objects[id].location = 0;
+}
+
+function move(directionIndex) {
+  const destination = state.directions[state.room][directionIndex];
+  if (!destination) {
+    print("YOU CAN'T GO THAT WAY!");
+    return;
+  }
+  state.room = destination;
+  describeRoom();
+}
+
+function go(noun) {
+  const word = noun.trim().toUpperCase();
+  const code = word.slice(0, 3);
+  if (["N", "NOR"].includes(code) || word === "NORTH") return move(1);
+  if (["S", "SOU"].includes(code) || word === "SOUTH") return move(2);
+  if (["E", "EAS"].includes(code) || word === "EAST") return move(3);
+  if (["W", "WES"].includes(code) || word === "WEST") return move(4);
+
+  if (word === "UP" || code === "UP") {
+    const up = {16:17, 23:24, 55:56, 41:42}[state.room];
+    if (!up) return print("I CAN'T GO UP HERE!");
+    state.room = up;
+    return describeRoom();
+  }
+  if (word === "DOWN" || code === "DOW") {
+    const down = {17:16, 24:23, 56:55, 42:41}[state.room];
+    if (!down) return print("I CAN'T GO DOWN HERE!");
+    state.room = down;
+    return describeRoom();
+  }
+  print("I CAN'T GO THERE!");
+}
+
+function getObject(id) {
+  if (!id) return print("I DON'T UNDERSTAND.");
+  const obj = state.objects[id];
+  if (obj.location === -1) return print("YOU'VE ALREADY GOT IT!");
+  if (obj.location !== state.room) return print(`I SEE NO ${obj.name}.`);
+  if (id === 1 && obj.name.includes("GLASS")) return print("NO. I DON'T WANT TO CUT MYSELF!");
+  if (id === 23) return print("IT'S FAR TOO HEAVY!");
+  if ([10, 18, 19, 22, 24].includes(id)) return print("I CAN'T.");
+  if (carriedCount() >= 9) return print("YOU'RE CARRYING TOO MUCH!");
+  obj.location = -1;
+  print("OK.");
+  updateStatus();
+}
+
+function dropObject(id) {
+  if (!id) return print("I DON'T UNDERSTAND.");
+  if (!has(id)) return print("YOU HAVEN'T GOT IT!!!");
+  if (state.room === 12 && id === 21) return win();
+  if ([10, 18, 19, 22].includes(id)) return print("DON'T BE SILLY.");
+
+  if (id === 2) state.torchBurning = false;
+  if (id === 8) {
+    state.objects[8].name = "A PAIR OF SNOWSHOES";
+    state.snowshoesWorn = false;
+  }
+  if (id === 1) {
+    print("IT SMASHES INTO PIECES, THE CONTENTS RUNNING AWAY!");
+    state.objects[1].name = "LITTLE PIECES OF SHARP GLASS";
+  }
+  state.objects[id].location = state.room;
+  print("OK.");
+  updateStatus();
+}
+
+function inventory() {
+  const carried = state.objects.slice(1).filter(o => o.location === -1);
+  print("YOU ARE CARRYING:");
+  if (!carried.length) print("  NOTHING!");
+  else carried.forEach(o => print(`  ${o.name}`));
+}
+
+function help() {
+  let gaveHint = true;
+  switch (state.room) {
+    case 20: print("THE BOULDER DOESN'T LOOK VERY STRONG."); break;
+    case 3: case 4: case 5: case 6: case 7: print("TRY GETTING UNLOST!"); break;
+    case 28: case 29: print("IT HELPED POPEYE!"); break;
+    case 33: print("TRY UNLOCKING THE GATE."); break;
+    case 48: print("A MAGIC WORD COULD HELP."); break;
+    case 24: print("A NEARBY TREE LOOKS DISTINCTLY CLIMBABLE. I COULD GO UP..."); break;
+    case 57: print("THE GROUND LOOKS FRESHLY DUG."); break;
+    default: gaveHint = false;
+  }
+  if (!gaveHint) {
+    if (Math.random() > .8) print("TRY EXAMINING THINGS AND USING OTHER VERBS.");
+    else if (Math.random() < .2) print("A VOICE SAYS 'BOOM'.");
+    else print("NOTHING HAPPENS!");
+  } else {
+    print("THAT'S ALL I CAN TELL YOU!");
+  }
+}
+
+function openObject(id) {
+  if (!id || !isHere(id)) return print("I DON'T SEE IT HERE!!");
+  if (id === 10) return print("IT WON'T.");
+  if (id === 14) return print("IT'S STUCK!");
+  print("I DON'T UNDERSTAND.");
+}
+
+function eat(id) {
+  if (!has(id)) return print("I DON'T HAVE IT, SILLY!");
+  if (![7, 9, 20].includes(id)) return print("YOU CAN'T BE SERIOUS?");
+  if (id === 9 && state.room === 29) {
+    print("AS YOU EAT THE SPINACH YOU ARE FILLED WITH ENERGY AND SPRING OVER THE WALL.");
+    print("AFTER THIS HEROIC FEAT YOU COLLAPSE, THEN EVENTUALLY STRUGGLE TO YOUR FEET!");
+    state.room = 31;
+    removeObject(9);
+    return describeRoom();
+  }
+  if (id === 9) return print("OK. I NIBBLE A BIT.");
+  if (id === 7) return print("YEUCH! I'M ALLERGIC TO FRUIT, ESPECIALLY ORANGES!");
+  print("YUMMY, THAT'S NICE — A BIT BONEY THOUGH.");
+  removeObject(20);
+  updateStatus();
+}
+
+function drink(id) {
+  if (!has(id)) return print("I HAVEN'T GOT IT!");
+  if (![1, 11].includes(id)) return print("DON'T BE SO STUPID.");
+  if (id === 11) {
+    print("HIC. TEE-HEE — I THINK IT MUST BE ME!");
+    removeObject(11);
+  } else {
+    print("YOU GLOW RED AND THEN TURN GREEN, BUT NOTHING ELSE HAPPENS!");
+    removeObject(1);
+  }
+  updateStatus();
+}
+
+function give(id) {
+  if (!has(id)) return print("YOU HAVEN'T GOT IT!");
+  if (state.room === 18 && id === 4 && state.troll > 0) {
+    print("THE TROLL LETS YOU PASS.");
+    state.directions[18][4] = 20;
+    removeObject(4);
+    state.troll = 0;
+  } else if (state.room === 38 && id === 7 && state.harpy > 0) {
+    print("THE HARPY GRABS THE ORANGE AND FLIES OFF INTO THE SKY!");
+    state.directions[38][4] = 37;
+    state.directions[38][3] = 39;
+    state.directions[38][2] = 33;
+    removeObject(7);
+    state.harpy = 0;
+  } else if (state.room === 35 && id === 11 && state.pirate > 0) {
+    print("THE PIRATE GRABS THE RUM AND STAGGERS OFF...");
+    state.directions[35][1] = 36;
+    state.directions[35][3] = 34;
+    removeObject(11);
+    state.pirate = 0;
+  } else {
+    return print("I CAN'T DO THAT!");
+  }
+  updateStatus();
+}
+
+function light(id) {
+  if (!has(id)) return print("YOU HAVEN'T GOT IT!");
+  if (![2, 3].includes(id)) return print("DON'T BE STUPID.");
+  if (id === 3) {
+    state.matchesLit = true;
+    return print("ALRIGHT.");
+  }
+  if (!state.matchesLit) return print("I CAN'T.");
+  state.objects[2].name = "A BURNING TORCH";
+  state.torchBurning = true;
+  print("OK.");
+  updateStatus();
+}
+
+function throwObject(id) {
+  if (!has(id)) return print("YOU HAVEN'T GOT IT!");
+  if (id !== 1) return dropObject(id);
+  removeObject(1);
+  if (state.room !== 20) {
+    print("THE BOTTLE SMASHES, GLOWS GREEN AND VANISHES!");
+  } else {
+    print("THE BOTTLE HITS THE BOULDER. ITS CONTENTS FIZZ VIOLENTLY...");
+    print("THE BOULDER CRUMBLES INTO DUST!");
+    state.rooms[20] = "AT THE EDGE OF A MOUNTAIN. A TUNNEL LEADS OFF TO THE WEST!";
+    removeObject(23);
+    state.directions[20][4] = 25;
+  }
+  updateStatus();
+}
+
+function readObject(id) {
+  if (id !== 13) return print("DON'T BE STUPID.");
+  if (!has(id)) return print("I HAVEN'T GOT IT!");
+  print("THE BOOK IS IN VERY BAD CONDITION, BUT I CAN JUST MAKE OUT:");
+  print("");
+  print("IT DESTROYS MOUNTAINS");
+  print("IT DESTROYS GRAVES");
+  print("IT DESTROYS ANYTHING");
+  print("AND LETS YOU INTO THE ST--N- R-O-!");
+  print("ANSWER: DY---I-E");
+  print("");
+  print("SORRY! THE LAST BIT IS ONLY PARTIALLY READABLE.");
+}
+
+function examine(id) {
+  if (!id) return print("I DON'T UNDERSTAND.");
+  if (!has(id) && !isHere(id)) return print("IT ISN'T HERE!");
+
+  const messages = {
+    23: "IT'S MADE OF A CRUMBLY SANDSTONE.",
+    24: "IT'S HUGE. IN FACT IT'S COLOSSAL!",
+    16: "IT'S WOODEN!",
+    1: "THERE'S A LABEL ON IT: ACID — USE WITH CARE.",
+    17: "IT COULD BE USEFUL.",
+    11: "A TATTERED LABEL READS 'CONTRABAND 32 QUALITY RUM'. IT'S 60% PROOF!",
+    10: "THERE'S A DRAUGHT COMING FROM UNDER IT!",
+    20: "IT'S A HERRING!!",
+    28: "IT'S DULLY ILLUMINANT!",
+    4: "A LABEL SAYS: THIS IS NOT THE TREASURE YOU MUST GET."
+  };
+  print(messages[id] || `IT'S NO MORE THAN ${state.objects[id].name}.`);
+}
+
+function pushOrPull(id) {
+  if (!id || has(id)) return print("I CAN'T DO THAT; I'M HOLDING IT!");
+  if (!isHere(id)) return print("IT ISN'T HERE!");
+  if (id === 10) {
+    removeObject(10);
+    if (state.panel === 0) return print("EH? THERE'S NO PANNEL!");
+    print("THE WOODEN PANNEL GLIDES NOISELESSLY AWAY!");
+    state.directions[32][1] = 33;
+    state.panel = 0;
+    return;
+  }
+  if (id === 12) {
+    if (state.objects[12].name !== "A FRESHLY OILED LEVER") return print("IT'S TOO RUSTY!");
+    print("AS YOU PULL THE LEVER, A SECRET PASSAGE IS REVEALED TO THE NORTH!");
+    state.directions[40][1] = 45;
+    return;
+  }
+  print("NOTHING HAPPENS!");
+}
+
+function oilObject(id) {
+  if (id !== 12) return print("DON'T BE SO STUPID!");
+  if (!isHere(12) && !has(12)) return print("I CAN'T SEE IT!");
+  if (!has(5)) return print("YOU HAVEN'T GOT ANY OIL TO OIL IT WITH.");
+  state.objects[12].name = "A FRESHLY OILED LEVER";
+  print("OK.");
+}
+
+function unlock(id) {
+  if (id !== 22) return print("HUH?");
+  if (!isHere(22)) return print("IT ISN'T HERE!");
+  if (!has(6)) return print("YOU HAVEN'T GOT THE KEY!");
+  print("THE GATE OPENS SLOWLY.");
+  state.directions[33][1] = 38;
+}
+
+function wear(id) {
+  if (id !== 8) return print("YOU CAN'T BE SERIOUS?");
+  if (!has(8)) return print("YOU HAVEN'T GOT IT!");
+  state.objects[8].name = "A PAIR OF SNOW-SHOES WHICH YOU ARE WEARING";
+  state.snowshoesWorn = true;
+  print("OK.");
+  updateStatus();
+}
+
+function shoot(id) {
+  if (id !== 18 && id !== 19) return print("I CAN'T.");
+  if (!has(16)) return print("I HAVE NO BOW!");
+  if (!has(17)) return print("I HAVE NO ARROW!");
+  if (state.room !== 53) return print("I SEE NO KNIGHT!");
+  if (state.knight === 0) return print("I SEE NO POINT IN MESSING WITH A DEAD BODY.");
+  print("OK — THE KNIGHT IS DEAD!");
+  state.knight = 0;
+  state.directions[53][2] = 54;
+  state.directions[53][3] = 62;
+  state.objects[19].location = state.room;
+  removeObject(18);
+  updateStatus();
+}
+
+function dig(noun) {
+  if (!["GRO", "GROUND", ""].includes(noun.trim().toUpperCase()) &&
+      noun.trim().toUpperCase().slice(0,3) !== "GRO") {
+    return print("I CAN'T DO THAT!!");
+  }
+  if (!has(15)) return print("I HAVE NO SPADE TO DIG WITH!");
+  if (state.room !== 57) return print("THE GROUND IS TOO HARD.");
+  if (state.dugPaper) return print("YOU DIG AND DIG, BUT DON'T FIND ANYTHING ELSE.");
+  state.dugPaper = true;
+  print("AS YOU DIG DOWN, YOU FIND A SCRAP OF PAPER. ON IT IS WRITTEN:");
+  print("");
+  print("SAY CHESTIE TO OPEN UP THE MAGICAL CHEST!!", "success");
+  print("");
+  print("THEN IT BURSTS INTO FLAMES!");
+}
+
+function say(words) {
+  const word = words.trim().toUpperCase().replace(/[^A-Z]/g, "");
+  if (word.startsWith("CHE")) {
+    if (!has(14)) return print("OK — NOTHING HAPPENS!");
+    state.objects[14].name = "AN OPEN CHEST";
+    state.chestOpen = true;
+    state.objects[21].location = state.room;
+    print("OK. THE CHEST OPENS!");
+    updateStatus();
+    return;
+  }
+  if (word.startsWith("DYN")) {
+    if (state.room !== 48) return print("OK — NOTHING HAPPENS!");
+    print("OK. THE DOOR SLIDES AWAY!");
+    state.directions[48][1] = 51;
+    return;
+  }
+  if (word.startsWith("ABR") || word.startsWith("SHA")) return print("THAT'S OLD!");
+  print("OK — NOTHING HAPPENS!");
+}
+
+function wave(id) {
+  if (id !== 28) return print("I SEE NO POINT!");
+  if (!has(28)) return print("I HAVEN'T GOT IT!");
+  if (state.room !== 64) return print("OK — NOTHING HAPPENS!");
+  print("WOW! SOMETHING HAPPENED!");
+  state.rooms[64] += " A CRYSTAL BRIDGE NOW SPANS THE FISSURE!";
+  state.directions[64][2] = 65;
+}
+
+function make(noun) {
+  const code = noun.trim().toUpperCase().slice(0,3);
+  if (!["BOA", "RAF"].includes(code)) return print("I CAN'T!");
+  if (!has(25)) return print("YOU NEED MORE MATERIALS!");
+  if (!has(26)) return print("I NEED MORE MATERIALS!");
+  if (!has(27)) return print("I HAVE NO HAMMER TO MAKE IT WITH!");
+  print("OK — I'VE JUST MADE A RAFT.");
+  removeObject(25);
+  removeObject(26);
+  state.objects[29].location = -1;
+  state.raftMade = true;
+  updateStatus();
+}
+
+function score() {
+  print(`YOU HAVE SCORED ${currentScore()} POINTS OUT OF 150.`);
+  print(`YOU HAVE BEEN PLAYING FOR ${formatTime(elapsedSeconds())}.`);
+}
+
+function saveGame() {
+  const save = structuredClone(state);
+  save.elapsedBeforeStart = elapsedSeconds();
+  save.startedAt = Date.now();
+  const serialised = JSON.stringify(save);
+  memorySave = serialised;
+  try {
+    localStorage.setItem("golden-castle-save-v1", serialised);
+    print("GAME SAVED IN THIS BROWSER.", "success");
+  } catch {
+    print("GAME SAVED FOR THIS OPEN PAGE.", "success");
+  }
+}
+
+function loadGame() {
+  let raw = memorySave;
+  try {
+    raw = localStorage.getItem("golden-castle-save-v1") || raw;
+  } catch {
+    // Some browsers restrict storage for locally opened files; the in-page
+    // fallback still supports SAVE and LOAD until the page is closed.
+  }
+  if (!raw) return print("THERE IS NO SAVED GAME IN THIS BROWSER.");
+  try {
+    state = JSON.parse(raw);
+    state.startedAt = Date.now();
+    state.dead = false;
+    state.won = false;
+    print("SAVED GAME LOADED.", "success");
+    describeRoom();
+    updateStatus();
+  } catch {
+    print("THE SAVED GAME COULD NOT BE READ.", "danger");
+  }
+}
+
+function normaliseVerb(word) {
+  const upper = word.toUpperCase();
+  const aliases = {
+    "TAKE": "GET", "PICK": "GET",
+    "L": "LOOK", "X": "EXAMINE",
+    "I": "INVENTORY", "INV": "INVENTORY",
+    "STRIKE": "LIGHT",
+    "OFFER": "GIVE",
+    "RESTORE": "LOAD",
+    "KILL": "ATTACK"
+  };
+  return aliases[upper] || upper;
+}
+
+function execute(rawCommand) {
+  let command = rawCommand.trim().toUpperCase().replace(/\s+/g, " ");
+  if (!command) return;
+
+  printCommand(command);
+
+  if (command === "RESTART" || command === "RUN" || command === "NEW") {
+    resetGame();
+    return;
+  }
+  if (command === "LOAD" || command === "RESTORE") {
+    loadGame();
+    return;
+  }
+  if (state.dead || state.won) {
+    print("Type RESTART or LOAD.");
+    return;
+  }
+
+  const directDirections = {
+    "N": "NORTH", "NORTH": "NORTH",
+    "S": "SOUTH", "SOUTH": "SOUTH",
+    "E": "EAST", "EAST": "EAST",
+    "W": "WEST", "WEST": "WEST",
+    "U": "UP", "UP": "UP",
+    "D": "DOWN", "DOWN": "DOWN"
+  };
+  if (directDirections[command]) {
+    go(directDirections[command]);
+    updateStatus();
+    return;
+  }
+
+  if (command === "LOOK" || command === "LOO") return describeRoom();
+  if (["INVENTORY", "INV", "I"].includes(command)) return inventory();
+  if (command === "HELP") return help();
+  if (command === "SCORE") return score();
+  if (command === "SAVE") return saveGame();
+  if (command === "INSTRUCTIONS" || command === "OBJECTIVE") return instructions();
+  if (command === "CLEAR") { screen.textContent = ""; return; }
+  if (command === "QUIT") {
+    print("Type RESTART whenever you wish to play again.");
+    state.dead = true;
+    return;
+  }
+  if (command === "JUMP") return print("OK — YOU DON'T GET FAR!");
+  if (command === "ATTACK" || command === "KILL") {
+    return print("I DON'T FEEL LIKE KILLING ANYTHING!");
+  }
+
+  const firstSpace = command.indexOf(" ");
+  if (firstSpace < 0) {
+    print("EH?");
+    return;
+  }
+
+  let verb = normaliseVerb(command.slice(0, firstSpace));
+  const noun = command.slice(firstSpace + 1).trim();
+
+  // Original program accepts the first three characters of verbs.
+  const verbByPrefix = {
+    "GO": "GO", "GET": "GET", "TAK": "GET", "LOO": "LOOK",
+    "INV": "INVENTORY", "DRO": "DROP", "HEL": "HELP", "QUI": "QUIT",
+    "OPE": "OPEN", "EAT": "EAT", "DRI": "DRINK", "GIV": "GIVE",
+    "OFF": "GIVE", "CLI": "CLIMB", "LIG": "LIGHT", "STR": "LIGHT",
+    "ATT": "ATTACK", "KIL": "ATTACK", "THR": "THROW", "REA": "READ",
+    "EXA": "EXAMINE", "PUS": "PUSH", "OIL": "OIL", "PUL": "PULL",
+    "UNL": "UNLOCK", "JUM": "JUMP", "WEA": "WEAR", "SHO": "SHOOT",
+    "DIG": "DIG", "SAY": "SAY", "WAV": "WAVE", "MAK": "MAKE"
+  };
+  verb = verbByPrefix[verb.slice(0,3)] || verb;
+
+  if (verb === "GO") return go(noun);
+  if (verb === "LOOK") return describeRoom();
+  if (verb === "INVENTORY") return inventory();
+  if (verb === "HELP") return help();
+  if (verb === "QUIT") { state.dead = true; return print("Type RESTART to play again."); }
+  if (verb === "JUMP") return print("OK — YOU DON'T GET FAR!");
+  if (verb === "ATTACK") return print("I DON'T FEEL LIKE KILLING ANYTHING!");
+  if (verb === "DIG") return dig(noun);
+  if (verb === "SAY") return say(noun);
+  if (verb === "MAKE") return make(noun);
+
+  const id = resolveObject(noun);
+  const handlers = {
+    "GET": getObject,
+    "DROP": dropObject,
+    "OPEN": openObject,
+    "EAT": eat,
+    "DRINK": drink,
+    "GIVE": give,
+    "LIGHT": light,
+    "THROW": throwObject,
+    "READ": readObject,
+    "EXAMINE": examine,
+    "PUSH": pushOrPull,
+    "PULL": pushOrPull,
+    "OIL": oilObject,
+    "UNLOCK": unlock,
+    "WEAR": wear,
+    "SHOOT": shoot,
+    "WAVE": wave
+  };
+  if (handlers[verb]) handlers[verb](id);
+  else if (verb === "CLIMB") {
+    if (noun.startsWith("TREE")) go("UP");
+    else go(noun);
+  } else {
+    print("WHAT?");
+  }
+  updateStatus();
+}
+
+$("#commandForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const command = input.value;
+  input.value = "";
+  execute(command);
+  input.focus();
+});
+
+document.querySelectorAll("[data-command]").forEach(button => {
+  button.addEventListener("click", () => {
+    execute(button.dataset.command);
+    input.focus();
+  });
+});
+
+clockTimer = setInterval(updateStatus, 1000);
+resetGame();
+
+// Expose a small debugging surface for preservation/testing.
+window.GoldenCastle = {
+  getState: () => structuredClone(state),
+  execute,
+  reset: resetGame,
+  original: {
+    rooms: ORIGINAL_ROOMS,
+    directions: ORIGINAL_DIRECTIONS,
+    objects: ORIGINAL_OBJECTS,
+    nouns: ORIGINAL_NOUNS,
+    verbs: ORIGINAL_VERBS
+  }
+};
+</script>
+</body>
+</html>
