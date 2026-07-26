@@ -527,7 +527,8 @@ function dropObject(id) {
   if (id === 2) state.torchBurning = false;
   if (id === 8) {
     state.objects[8].name = "A PAIR OF SNOWSHOES";
-    state.snowshoesWorn = false;
+    // Match the original C64 logic: once successfully worn, the snowshoe
+    // achievement/protection flag remains set even if the item is dropped.
   }
   if (id === 1) {
     print("IT SMASHES INTO PIECES, THE CONTENTS RUNNING AWAY!");
