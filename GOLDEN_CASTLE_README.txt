@@ -55,3 +55,9 @@ golden_castle_preview.png  Preview image
 
 This is an initial preservation build and should be play-tested against the
 original for any obscure behavioural differences.
+
+Verified playthrough
+--------------------
+A complete 135-command playthrough was run through the visible browser command
+input on 26 July 2026. It reached the win condition with 150/150 points and no
+JavaScript errors. See GOLDEN_CASTLE_VERIFIED_WALKTHROUGH.txt.
